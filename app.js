@@ -520,7 +520,6 @@
       <div class="track-album">${esc(album)}</div>
       <div class="track-duration">${missing ? '—' : formatTime(track.duration)}</div>
       <div class="track-actions">
-        <button class="track-play-button" data-action="play-track" data-id="${esc(track.id)}" data-context="${idsAttr}" ${missing ? 'disabled' : ''} title="Play ${esc(track.title || track.name || 'track')} now" aria-label="Play ${esc(track.title || track.name || 'track')}">${iconSvg('play')}</button>
         ${opts.playlistId ? `<button data-action="remove-playlist-track" data-id="${esc(track.id)}" data-playlist="${esc(opts.playlistId)}" title="Remove from playlist" aria-label="Remove from playlist">×</button>` : `<button class="${fav ? 'favorited' : ''}" data-action="toggle-favorite" data-id="${esc(track.id)}" title="${fav ? 'Remove favorite' : 'Add to favorites'}" aria-label="${fav ? 'Remove favorite' : 'Add to favorites'}">${fav ? '♥' : '♡'}</button><button data-action="add-track-playlist" data-id="${esc(track.id)}" title="Add to playlist" aria-label="Add to playlist">＋</button>`}
       </div>
     </div>`;
@@ -1170,17 +1169,41 @@
     }
   }
 
+  function isMobileBrowser() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '') || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent || ''));
+  }
+  function chooseMultipleAudioFilesForFolderFallback(reason = 'This browser does not provide folder access.') {
+    // Some mobile browsers expose the webkitdirectory attribute but still show a single-file picker.
+    // Use an ordinary multiple-file picker instead of silently importing only one item.
+    toast(`${reason} Select multiple music files in the next picker, or use an up-to-date Chrome on Android for folder import.`, 'info');
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'audio/*,.mp3,.flac,.m4a,.aac,.wav,.ogg,.opus,.wma,.aiff';
+    input.multiple = true;
+    input.hidden = true;
+    input.addEventListener('change', async () => {
+      const files = [...(input.files || [])];
+      if (files.length) await importItems(files.map(file => ({ file, relativePath: file.name })));
+      input.remove();
+    }, { once: true });
+    document.body.appendChild(input);
+    input.click();
+  }
   async function chooseFolder() {
     if (typeof window.showDirectoryPicker === 'function' && window.isSecureContext) {
       try {
         const handle = await window.showDirectoryPicker({ mode: 'read', startIn: 'music' });
         const entries = await walkDirectory(handle, `${handle.name || 'Selected folder'}/`);
+        if (!entries.length) { toast('No supported audio files were found in that folder.', 'error'); return; }
         await importItems(entries, [handle.name || 'Selected folder']);
       } catch (error) {
         if (error?.name === 'AbortError') return;
-        console.warn('Directory picker failed, opening browser fallback.', error);
-        $('#folderInput').click();
+        console.warn('Directory picker failed.', error);
+        if (isMobileBrowser()) chooseMultipleAudioFilesForFolderFallback('Folder access failed in this browser.');
+        else $('#folderInput').click();
       }
+    } else if (isMobileBrowser()) {
+      chooseMultipleAudioFilesForFolderFallback('Folder selection is not supported by this browser version.');
     } else {
       $('#folderInput').click();
     }
@@ -1341,6 +1364,17 @@
   function openPlaylist(id) { state.view = 'playlist-detail'; state.detail = { type:'playlist', id }; render(); persistState(); }
 
   document.addEventListener('click', async event => {
+    const tappedRow = event.target.closest('[data-trackrow]');
+    const clickedControl = event.target.closest('[data-action],button,input,select,a,.drag-handle');
+    if (tappedRow && !clickedControl && !tappedRow.classList.contains('header-row')) {
+      const playTarget = $('.track-title[data-action="play-track"]', tappedRow);
+      if (playTarget && playTarget.dataset.missing !== 'true' && playTarget.dataset.id) {
+        const ids = playTarget.dataset.context ? playTarget.dataset.context.split(',').filter(Boolean) : allTrackIds();
+        await playTrack(playTarget.dataset.id, ids);
+        if (state.view === 'nowplaying') render();
+        return;
+      }
+    }
     const button = event.target.closest('[data-action]');
     if (!button) return;
     const action = button.dataset.action;

@@ -68,3 +68,10 @@ Open Havij's Settings and choose your songs/folder. When the browser supports pe
 The JavaScript source should pass `node --check app.js`. Actual file-handle persistence and playback need to be tested in the target Android browser with a real file and HTTPS-hosted installation, because API support and file permission behavior differ by browser and OS.
 
 On Windows, `start-local.bat` starts the server on port 8000. Open `http://localhost:8000` for local testing. This is not a production/HTTPS host for installing the PWA on your phone.
+
+
+## Android folder import and tap-to-play
+
+Song rows can be tapped anywhere outside their action controls to start that track; the dedicated per-row Play icon has been removed. On mobile, the seek slider is attached to the top edge of the mini-player instead of floating over page content.
+
+Folder import uses `showDirectoryPicker()` on secure origins where the browser implements it. Some mobile browsers do not support persistent folder selection; in those browsers Havij falls back to a standard multi-file chooser and explains that multiple songs can be selected. For true folder import on Android, use an updated Chrome version that supports the File System Access directory picker. If the browser does not support reusable file handles, imported selections may need to be reconnected after the app is closed.
