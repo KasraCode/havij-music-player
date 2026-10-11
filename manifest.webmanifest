@@ -1,0 +1,25 @@
+{
+  "name": "Havij Music Player",
+  "short_name": "Havij",
+  "description": "A private, offline-first local music player.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#171513",
+  "theme_color": "#171513",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "carrot-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "carrot-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

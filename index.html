@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#171513">
+  <meta name="description" content="Havij — your private, offline-first music player.">
+  <title>Havij Music Player</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="carrot.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="brand" data-action="navigate" data-view="home" aria-label="Havij home">
+        <span class="brand-mark"><img src="carrot.svg" alt=""></span>
+        <span class="brand-name">havij<span>.</span></span>
+      </button>
+      <label class="global-search">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="globalSearch" type="search" placeholder="Search your music" autocomplete="off" aria-label="Search your music">
+        <kbd>⌘ K</kbd>
+      </label>
+      <div class="top-actions">
+        <button class="icon-button import-top" data-action="import-files" title="Import songs" aria-label="Import songs"><span class="plus-icon">＋</span></button>
+        <div class="privacy-pill"><span></span> On this device</div>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="side-section">
+          <p class="side-label">MENU</p>
+          <button class="side-link active" data-action="navigate" data-view="home"><span class="side-ico">⌂</span>Home</button>
+          <button class="side-link" data-action="navigate" data-view="library"><span class="side-ico">▤</span>Library</button>
+          <button class="side-link" data-action="navigate" data-view="playlists"><span class="side-ico">☷</span>Playlists</button>
+          <button class="side-link" data-action="navigate" data-view="favorites"><span class="side-ico">♡</span>Favorites</button>
+        </div>
+        <div class="side-section side-playlists">
+          <div class="side-heading"><p class="side-label">YOUR PLAYLISTS</p><button class="tiny-icon" data-action="create-playlist" title="Create playlist">＋</button></div>
+          <div id="sidebarPlaylists" class="side-playlist-list"></div>
+        </div>
+        <div class="sidebar-bottom">
+          <div class="local-card"><span class="local-orb">♫</span><div><strong>Just your music.</strong><small>No account. No uploads.</small></div></div>
+          <button class="side-link" data-action="navigate" data-view="settings"><span class="side-ico">⚙</span>Settings</button>
+        </div>
+      </aside>
+
+      <main id="mainView" class="main-view" tabindex="-1"></main>
+    </div>
+
+    <section id="playerDock" class="player-dock" aria-label="Audio player"></section>
+    <nav id="mobileNav" class="mobile-nav" aria-label="Mobile navigation"></nav>
+  </div>
+
+  <audio id="audio" preload="metadata"></audio>
+  <input id="fileInput" type="file" accept="audio/*,.mp3,.flac,.m4a,.aac,.wav,.ogg,.opus,.wma,.aiff" multiple hidden>
+  <input id="folderInput" type="file" accept="audio/*,.mp3,.flac,.m4a,.aac,.wav,.ogg,.opus,.wma,.aiff" webkitdirectory directory multiple hidden>
+  <div id="modalRoot"></div>
+  <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>
