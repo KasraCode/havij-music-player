@@ -75,3 +75,9 @@ On Windows, `start-local.bat` starts the server on port 8000. Open `http://local
 Song rows can be tapped anywhere outside their action controls to start that track; the dedicated per-row Play icon has been removed. On mobile, the seek slider is attached to the top edge of the mini-player instead of floating over page content.
 
 Folder import uses `showDirectoryPicker()` on secure origins where the browser implements it. Some mobile browsers do not support persistent folder selection; in those browsers Havij falls back to a standard multi-file chooser and explains that multiple songs can be selected. For true folder import on Android, use an updated Chrome version that supports the File System Access directory picker. If the browser does not support reusable file handles, imported selections may need to be reconnected after the app is closed.
+
+## Latest mobile UI refinements
+
+- The queue / shuffle-list dialog is centered against the mobile dynamic viewport, respects safe-area insets, and keeps long queues scrollable inside the dialog.
+- Song-row favorite and Add to playlist actions stay visible and tappable on Android-sized screens.
+- The playlist Add songs picker includes each track's cached cover thumbnail; where an artwork thumbnail has not been cached yet, Havij attempts to load it from the selected original file handle without saving audio bytes.

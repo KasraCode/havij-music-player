@@ -1,4 +1,4 @@
-const CACHE = 'havij-music-shell-v4';
+const CACHE = 'havij-music-shell-v5';
 const SHELL = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './carrot.svg', './carrot-192.png', './carrot-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
